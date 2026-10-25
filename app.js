@@ -113,6 +113,16 @@ function load() {
     return { ...d, ...s, settings: { ...d.settings, ...s.settings }, stats: { ...d.stats, ...s.stats } };
   } catch (e) { return d; }
 }
+// A pasted backup may come from anywhere: allow only finite numbers, booleans, null and plain ids/dates,
+// so nothing in it can turn into markup when the screens render it
+function safeSave(v, depth = 0) {
+  if (depth > 6) return false;
+  if (v === null || typeof v === 'boolean') return true;
+  if (typeof v === 'number') return Number.isFinite(v);
+  if (typeof v === 'string') return /^[\w .:-]{0,40}$/.test(v);
+  if (typeof v !== 'object') return false;
+  return Object.entries(v).every(([k, x]) => /^[\w .:-]{1,40}$/.test(k) && safeSave(x, depth + 1));
+}
 let S = load();
 function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
@@ -974,7 +984,7 @@ function settingsModal() {
           apply: () => {
             try {
               const data = JSON.parse(decodeURIComponent(escape(atob($('#modal-card textarea').value.trim()))));
-              if (typeof data.xp !== 'number' || !data.quest) throw 0;
+              if (!safeSave(data) || !Number.isFinite(data.xp) || !Number.isFinite(data.gold ?? 0) || typeof data.quest !== 'object') throw 0;
               localStorage.setItem(SAVE_KEY, JSON.stringify(data));
               S = load(); applyTheme(); closeModal(); goHome(); toast('Progress restored ✓');
             } catch (e) { toast('That code doesn\'t look right'); }

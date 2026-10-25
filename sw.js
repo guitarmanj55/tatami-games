@@ -1,5 +1,5 @@
 // Network-first so updates show up straight away; cache keeps it working offline.
-const CACHE = 'sudoku-quest-v3';
+const CACHE = 'sudoku-quest-v4';
 const ASSETS = ['./', 'index.html', 'style.css', 'app.js', 'sudoku.js', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
