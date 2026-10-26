@@ -6,9 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Sudoku Quest">
+<meta name="apple-mobile-web-app-title" content="Tatami Games">
 <meta name="theme-color" content="#140d0b">
-<title>Sudoku Quest</title>
+<title>Tatami Games</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
@@ -16,20 +16,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="games.css">
 </head>
 <body data-theme="lacquer">
 <div id="app">
   <section id="screen-home" class="screen active"></section>
-  <section id="screen-map" class="screen"></section>
-  <section id="screen-game" class="screen"></section>
-  <section id="screen-shop" class="screen"></section>
-  <section id="screen-journal" class="screen"></section>
 </div>
 <div id="modal" class="modal hidden"><div id="modal-card" class="modal-card"></div></div>
-<div id="loading" class="loading hidden"><div class="ink-spin"></div><p>Grinding the ink…</p></div>
 <div id="toast"></div>
 <canvas id="confetti"></canvas>
-<script src="sudoku.js"></script>
-<script src="app.js"></script>
+<script src="common.js"></script>
+<script src="hub.js"></script>
 </body>
 </html>

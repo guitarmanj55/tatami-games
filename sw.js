@@ -1,6 +1,7 @@
 // Network-first so updates show up straight away; cache keeps it working offline.
-const CACHE = 'sudoku-quest-v4';
-const ASSETS = ['./', 'index.html', 'style.css', 'app.js', 'sudoku.js', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
+const CACHE = 'tatami-games-v5';
+const ASSETS = ['./', 'index.html', 'hub.js', 'common.js', 'style.css', 'games.css', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png',
+  'sudoku.html', 'app.js', 'sudoku.js', 'solitaire.html', 'solitaire.js', 'mahjong.html', 'mahjong-core.js', 'mahjong.js'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));

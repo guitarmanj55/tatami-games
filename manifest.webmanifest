@@ -1,6 +1,6 @@
 {
-  "name": "Sudoku Quest",
-  "short_name": "Sudoku Quest",
+  "name": "Tatami Games",
+  "short_name": "Tatami Games",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

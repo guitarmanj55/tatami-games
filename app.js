@@ -113,16 +113,6 @@ function load() {
     return { ...d, ...s, settings: { ...d.settings, ...s.settings }, stats: { ...d.stats, ...s.stats } };
   } catch (e) { return d; }
 }
-// A pasted backup may come from anywhere: allow only finite numbers, booleans, null and plain ids/dates,
-// so nothing in it can turn into markup when the screens render it
-function safeSave(v, depth = 0) {
-  if (depth > 6) return false;
-  if (v === null || typeof v === 'boolean') return true;
-  if (typeof v === 'number') return Number.isFinite(v);
-  if (typeof v === 'string') return /^[\w .:-]{0,40}$/.test(v);
-  if (typeof v !== 'object') return false;
-  return Object.entries(v).every(([k, x]) => /^[\w .:-]{1,40}$/.test(k) && safeSave(x, depth + 1));
-}
 let S = load();
 function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
@@ -248,6 +238,7 @@ function renderHome() {
   const li = levelInfo(S.xp), next = nextQuestStage(), dk = dayKey(), dailyDone = S.daily[dk], g = S.current, streak = currentStreak();
   $('#screen-home').innerHTML = `
     ${PETALS}
+    <button class="icon-btn hub-back" data-go="hub" aria-label="All games">${ICON.back}</button>
     <div class="hero"><div class="sun"></div>${ICON.mountains}<div class="seal">数</div><h1>Sudoku Quest</h1><p class="jp">数独の旅</p><p class="tag">Master the grid. Climb the mountain. Reach the Celestial Palace.</p></div>
     <div class="card player">
       <div class="avatar"><span>${li.level}</span></div>
@@ -953,11 +944,9 @@ const SETTING_ROWS = [['sound', 'Sound effects'], ['peers', 'Highlight row, colu
 function settingsModal() {
   modal(`<h2>Settings</h2>
     <div class="set-list">${SETTING_ROWS.map(([k, l]) => `<div class="set-row" data-act="toggle" data-k="${k}"><span>${l}</span><span class="switch ${S.settings[k] ? 'on' : ''}"></span></div>`).join('')}</div>
-    <p class="muted" style="font-size:12px;margin-top:14px">Progress saves automatically on this device. Make a backup code to move it or keep it safe.</p>
+    <p class="muted" style="font-size:12px;margin-top:14px">Backups and resets cover all three games, so they live in the main menu's settings.</p>
     <div class="m-btns">
-      <button class="btn" data-act="backup">Copy backup code</button>
-      <button class="btn" data-act="restore">Restore from code</button>
-      <button class="btn danger" data-act="reset">Reset all progress</button>
+      <button class="btn" data-go="hub-settings">Backup &amp; reset</button>
       <button class="btn primary" data-act="close">Done</button>
     </div>`, {
     toggle: el => {
@@ -965,36 +954,6 @@ function settingsModal() {
       el.querySelector('.switch').classList.toggle('on', S.settings[k]);
       if (k === 'sound' && S.settings.sound) sfx.coin();
     },
-    backup: () => {
-      const code = btoa(unescape(encodeURIComponent(JSON.stringify(S))));
-      modal(`<h2>Backup code</h2><p class="muted">Copy this and keep it somewhere safe (Notes works).</p><textarea class="code" readonly>${code}</textarea>
-        <div class="m-btns"><button class="btn primary" data-act="copy">Copy</button><button class="btn" data-act="back">Back</button></div>`,
-        {
-          copy: () => {
-            const ta = $('#modal-card textarea');
-            (navigator.clipboard ? navigator.clipboard.writeText(code) : Promise.reject()).then(() => toast('Copied!'), () => { ta.select(); document.execCommand('copy'); toast('Copied!'); });
-          },
-          back: settingsModal,
-        });
-    },
-    restore: () => {
-      modal(`<h2>Restore</h2><p class="muted">Paste a backup code. This replaces your current progress.</p><textarea class="code" placeholder="Paste code here"></textarea>
-        <div class="m-btns"><button class="btn primary" data-act="apply">Restore</button><button class="btn" data-act="back">Back</button></div>`,
-        {
-          apply: () => {
-            try {
-              const data = JSON.parse(decodeURIComponent(escape(atob($('#modal-card textarea').value.trim()))));
-              if (!safeSave(data) || !Number.isFinite(data.xp) || !Number.isFinite(data.gold ?? 0) || typeof data.quest !== 'object') throw 0;
-              localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-              S = load(); applyTheme(); closeModal(); goHome(); toast('Progress restored ✓');
-            } catch (e) { toast('That code doesn\'t look right'); }
-          },
-          back: settingsModal,
-        });
-    },
-    reset: () => confirmModal('Reset everything?', 'All stars, gold, themes and stats will be wiped. This cannot be undone.', 'Reset', () => {
-      S = defaultSave(); persist(); applyTheme(); goHome(); toast('Fresh start');
-    }, true),
   });
 }
 
@@ -1005,7 +964,9 @@ document.addEventListener('click', e => {
   if (modalOpen()) closeModal();
   sfx.tap();
   switch (t.dataset.go) {
-    case 'home': goHome(); break;
+    case 'home': if (openedShop && activeScreen() === 'screen-shop') location.href = './'; else goHome(); break;
+    case 'hub': location.href = './'; break;
+    case 'hub-settings': location.href = './#settings'; break;
     case 'map': openMap(); break;
     case 'resume': openGame(); break;
     case 'daily': startDaily(); break;
@@ -1060,7 +1021,11 @@ document.addEventListener('keydown', e => {
 if (S.current && !(S.current.puzzle && S.current.puzzle.length === 81)) S.current = null;
 applyTheme();
 buildGameScreen();
-goHome();
+// The hub links straight to the theme shop; its back button then returns to the hub
+const openedShop = location.hash === '#shop';
+if (openedShop) { history.replaceState(null, '', location.pathname); renderShop(); show('shop'); } else goHome();
+// A page restored from the back/forward cache holds a stale save; reload so gold earned in other games isn't overwritten
+window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
 window.__sq = { get state() { return S; }, input, select: i => { selected = i; } }; // handy for debugging
 })();

@@ -1,0 +1,120 @@
+/* Hub, Solitaire and Mahjong. Builds on style.css (themes, cards, buttons, modals). */
+
+/* ---------- Hub ---------- */
+a.big, .mini-row a { color: inherit; text-decoration: none; -webkit-touch-callout: none; }
+.mini-row a {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 13px 6px; border-radius: 16px;
+  background: var(--panel); border: 1px solid var(--line); font-size: 22px; position: relative;
+}
+.mini-row a span { font-size: 13px; font-weight: 600; color: var(--muted); }
+.mini-row a:active { transform: scale(.96); }
+[data-theme="lacquer"] .mini-row a::after {
+  content: ''; position: absolute; inset: 4px; border: 1px solid color-mix(in srgb, var(--gold) 22%, transparent); border-radius: 12px; pointer-events: none;
+}
+.mini-row.two { grid-template-columns: 1fr 1fr; }
+.game-card { padding: 16px; }
+.game-card b em { font-style: normal; font-weight: 600; font-size: 13px; color: var(--accent2); margin-left: 4px; font-family: 'Shippori Mincho B1', 'Hiragino Mincho ProN', serif; }
+.gseal {
+  flex: none; width: 54px; height: 54px; display: grid; place-items: center; border-radius: 10px;
+  background: #b8261a; color: #fff4e6; border: 3px double #fff4e6; transform: rotate(-3deg);
+  font: 800 30px/1 'Shippori Mincho B1', 'Hiragino Mincho ProN', serif; box-shadow: 0 4px 12px rgba(0,0,0,.3);
+}
+.game-card:nth-of-type(2) .gseal { transform: rotate(2deg); }
+.live { color: var(--good); font-size: 11px; }
+.big .chev.reward { display: flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 800; color: var(--gold); }
+.rules { text-align: left; margin-top: 8px; }
+.rules p { font-size: 14px; line-height: 1.5; margin-top: 10px; }
+
+/* Sudoku's home: a way back to the hub */
+#screen-home > .hub-back { position: absolute; top: 0; left: 0; z-index: 3; }
+
+/* ---------- Shared game page frame ---------- */
+.play-page #app { height: 100dvh; display: flex; flex-direction: column; padding-left: 8px; padding-right: 8px; overflow: hidden; }
+.play-page .screen.active { flex: 1; min-height: 0; gap: 8px; }
+.play-page #screen-game { align-items: stretch; }
+.play-page #screen-menu.active { overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 6px 16px; margin: 0 -2px; }
+.play-stats { display: flex; justify-content: space-between; padding: 0 6px; font-weight: 700; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tools.four { width: 100%; grid-template-columns: repeat(4, 1fr); }
+.tool:disabled { opacity: .35; }
+.tool.ready svg { color: var(--gold); filter: drop-shadow(0 0 6px var(--gold)); }
+.tool.ready span { color: var(--gold); }
+
+/* ---------- Solitaire ---------- */
+.sol-board { position: relative; flex: 1; min-height: 0; touch-action: none; }
+.slot, .pc { position: absolute; left: 0; top: 0; width: var(--cw); height: var(--ch); border-radius: calc(var(--cw) * .12); }
+.slot {
+  display: grid; place-items: center; border: 2px dashed color-mix(in srgb, var(--text) 18%, transparent);
+  background: color-mix(in srgb, var(--text) 4%, transparent); color: color-mix(in srgb, var(--text) 22%, transparent);
+  font-size: calc(var(--cw) * .5); font-family: 'Shippori Mincho B1', 'Hiragino Mincho ProN', serif;
+}
+.slot.found-slot.red { color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.slot.tab-slot span { font-size: calc(var(--cw) * .36); opacity: .7; }
+.slot.stock-slot { cursor: pointer; }
+.slot.hint { border-color: var(--gold); box-shadow: 0 0 14px var(--gold); }
+
+.pc { transition: transform .24s cubic-bezier(.3,.8,.3,1); will-change: transform; cursor: pointer; }
+.pc.instant, .pc.dragging { transition: none; }
+.pc.dragging .pc-in { box-shadow: 0 12px 24px rgba(0,0,0,.4); }
+.pc-in { position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 1px 3px rgba(0,0,0,.35); }
+.pc-face, .pc-back { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; }
+.pc-back, .pc.down .pc-face { display: none; }
+.pc.down .pc-back { display: block; }
+.pc.flip .pc-in { animation: cardFlip .28s ease-out; }
+@keyframes cardFlip { 0% { transform: scaleX(.05); } 100% { transform: none; } }
+.pc-face {
+  background: linear-gradient(170deg, #fffdf6, #f3ead6); color: #1f1a17; border: 1px solid rgba(0,0,0,.18);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+}
+.pc-face.red { color: #c0392b; }
+.pc-face .pr { position: absolute; left: 6%; top: 2%; font-weight: 800; font-size: calc(var(--cw) * .36); letter-spacing: -.06em; line-height: 1; }
+.pc-face .ps { position: absolute; right: 7%; top: 3%; font-size: calc(var(--cw) * .32); line-height: 1; }
+.pc-face .pm { position: absolute; left: 0; right: 0; bottom: 8%; text-align: center; font-size: calc(var(--cw) * .62); line-height: 1; }
+.pc-face .pm.court { font-family: 'Shippori Mincho B1', 'Hiragino Mincho ProN', serif; font-weight: 800; font-size: calc(var(--cw) * .56); bottom: 10%; }
+.pc-back {
+  border: 2px solid #fff4e6;
+  background:
+    radial-gradient(circle at 50% 100%, transparent 28%, rgba(255,240,215,.22) 30%, transparent 34%, transparent 46%, rgba(255,240,215,.18) 48%, transparent 52%) 0 0 / 14px 8px,
+    linear-gradient(160deg, color-mix(in srgb, var(--accent) 85%, #fff), color-mix(in srgb, var(--accent) 70%, #000));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 60%, #000);
+}
+.pc.hint .pc-in { box-shadow: 0 0 0 3px var(--gold), 0 0 16px var(--gold); }
+.pc.shake .pc-in { animation: shake .35s; }
+
+/* ---------- Mahjong ---------- */
+.mj-board { position: relative; flex: 1; min-height: 0; }
+.mt {
+  position: absolute; width: calc(var(--tw) - 1px); height: calc(var(--th) - 1px); border-radius: calc(var(--tw) * .14);
+  background: #e9dcbd; cursor: pointer;
+  box-shadow: calc(var(--d) * .5) calc(var(--d) * .5) 0 #d9c393, var(--d) var(--d) 0 #a8875a, calc(var(--d) + 1px) calc(var(--d) + 2px) 5px rgba(0,0,0,.4);
+  transition: transform .15s, opacity .25s, filter .2s;
+}
+.mt-face {
+  position: absolute; inset: 0; border-radius: inherit; display: grid; place-items: center; overflow: hidden;
+  background: linear-gradient(160deg, #fffdf7, #f4ead4); border: 1px solid rgba(120,90,40,.25);
+  font-family: 'Shippori Mincho B1', 'Hiragino Mincho ProN', serif;
+}
+.mt-svg { width: 86%; height: 86%; stroke: none; fill: initial; }
+.mt-num { position: absolute; top: 4%; left: 0; right: 0; text-align: center; font-weight: 800; font-size: calc(var(--tw) * .44); color: #1e293b; line-height: 1; }
+.mt-wan { position: absolute; bottom: 6%; left: 0; right: 0; text-align: center; font-weight: 800; font-size: calc(var(--tw) * .46); color: #c0392b; line-height: 1; }
+.mt-big { font-weight: 800; font-size: calc(var(--tw) * .64); line-height: 1; }
+.mt-bonus { font-size: calc(var(--tw) * .56); margin-top: -12%; }
+.mt-tag { position: absolute; bottom: 7%; right: 8%; color: #fff; font-size: calc(var(--tw) * .2); font-weight: 800; padding: 1px 3px; border-radius: 4px; line-height: 1.1; }
+.mt-white { width: 56%; height: 66%; border: calc(var(--tw) * .06) solid #1d4ed8; border-radius: 4px; box-shadow: inset 0 0 0 calc(var(--tw) * .04) #fff, inset 0 0 0 calc(var(--tw) * .07) #1d4ed8; }
+.mj-board.dim .mt.blocked { filter: brightness(.72) saturate(.7); }
+.mt.sel { transform: translateY(-3px); }
+.mt.sel .mt-face { background: linear-gradient(160deg, #fff5c8, #f6d77a); box-shadow: inset 0 0 0 3px var(--gold); }
+.mt.hint .mt-face { animation: tileHint .8s ease-in-out 2; }
+@keyframes tileHint { 50% { box-shadow: inset 0 0 0 3px var(--accent2); background: #e7f8ff; } }
+.mt.gone { opacity: 0; pointer-events: none; transform: scale(.6); }
+.mt.pop-out { opacity: 0; transform: scale(1.25) translateY(-8px); pointer-events: none; }
+.mt.shake { animation: shake .35s; }
+.mt.drop { animation: tileDrop .45s cubic-bezier(.2,1.3,.4,1) backwards; }
+@keyframes tileDrop { from { opacity: 0; transform: translateY(-30px) scale(1.08); } }
+.mt.shuffled { animation: tileShuffle .5s ease; }
+@keyframes tileShuffle { 40% { transform: scaleX(.1); } }
+
+.mj-hero { display: grid; place-items: center; padding: 6px 0 4px; }
+.mj-hero-tiles { display: flex; gap: 14px; --tw: 52px; --th: 68px; --d: 6px; }
+.mj-hero-tiles .mt { position: relative; cursor: default; }
+.mj-hero-tiles .mt:nth-child(1) { transform: rotate(-8deg) translateY(6px); }
+.mj-hero-tiles .mt:nth-child(3) { transform: rotate(8deg) translateY(6px); }
