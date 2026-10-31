@@ -115,7 +115,7 @@ h1, h2, h3 { font-family: 'Shippori Mincho B1', 'Hiragino Mincho ProN', serif; l
 /* ---------- Top bar ---------- */
 .topbar { display: flex; align-items: center; gap: 10px; min-height: 46px; }
 .icon-btn {
-  width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; flex: none;
+  width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; flex: none;
   background: var(--panel); border: 1px solid var(--line);
 }
 .icon-btn:active { transform: scale(.94); }
