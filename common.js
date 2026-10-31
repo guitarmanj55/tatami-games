@@ -174,7 +174,8 @@ const shuffle = (a, rnd = Math.random) => { for (let i = a.length - 1; i > 0; i-
 
 // A page restored from the back/forward cache holds a stale copy of the profile; reload it instead
 window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});document.addEventListener('gesturestart', (e) => e.preventDefault()); // no pinch-zoom
+
 
 return {
   $, PROFILE_KEY, SOL_KEY, MJ_KEY, readJSON, writeJSON, profile, award, levelInfo, titleFor, applyTheme, soundOn, setSound,
