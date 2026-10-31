@@ -1,7 +1,15 @@
 'use strict';
 (() => {
 const $ = (s, el = document) => el.querySelector(s);
-const SAVE_KEY = 'sudokuQuest.save.v1';
+const SAVE_KEY = 'tatami.sudoku.v1';
+// Same one-time move as in common.js (the Sudoku page may load before the hub has run it)
+try {
+  const old = localStorage.getItem('sudokuQuest.save.v1');
+  if (old !== null && localStorage.getItem(SAVE_KEY) === null) {
+    localStorage.setItem(SAVE_KEY, old);
+    if (localStorage.getItem(SAVE_KEY) === old) localStorage.removeItem('sudokuQuest.save.v1');
+  }
+} catch (e) {}
 const { ROW, COL, POP } = Sudoku;
 const STAGES = 10; // per realm; the last one is the boss
 const VARIANTS = [Sudoku.CLASSIC, Sudoku.DIAGONAL].map(v => ({ ...v, PEER_SET: v.PEERS.map(p => new Set(p)) }));

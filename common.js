@@ -3,9 +3,17 @@
 // lives in the Sudoku save, so every game feeds the same level and wallet and the theme shop covers all three.
 const Common = (() => {
 const $ = (s, el = document) => el.querySelector(s);
-const PROFILE_KEY = 'sudokuQuest.save.v1';
+const PROFILE_KEY = 'tatami.sudoku.v1';
 const SOL_KEY = 'tatami.solitaire.v1';
 const MJ_KEY = 'tatami.mahjong.v1';
+// The Sudoku save used to be 'sudokuQuest.save.v1'; move it over once, and only drop the old copy after the new one reads back
+try {
+  const old = localStorage.getItem('sudokuQuest.save.v1');
+  if (old !== null && localStorage.getItem(PROFILE_KEY) === null) {
+    localStorage.setItem(PROFILE_KEY, old);
+    if (localStorage.getItem(PROFILE_KEY) === old) localStorage.removeItem('sudokuQuest.save.v1');
+  }
+} catch (e) {}
 
 const readJSON = k => { try { return JSON.parse(localStorage.getItem(k)) || null; } catch (e) { return null; } };
 const writeJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
